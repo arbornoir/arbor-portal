@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBOR NOIR | カリキュラム動画ポータル</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        arbor: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#022c22' },
+                        sunlight: { 400: '#facc15', 500: '#eab308' }
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L0 0 L0 20' fill='none' stroke='rgba(16, 185, 129, 0.05)' stroke-width='1'/%3E%3C/svg%3E\")",
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .card-hover { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3), 0 8px 10px -6px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        .curriculum-item, .tutorial-item { opacity: 1; transform: translateY(0); }
+        .hidden-item { display: none !important; }
+        .fade-in-up { animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased relative">
+
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
+
+    <!-- ナビゲーションバー -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm border-b border-arbor-100 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-arbor-500 to-sunlight-400 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-arbor-500/30 border border-white/20">AN</div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">ARBOR NOIR</h1>
+                    <p class="text-[10px] text-arbor-600 font-bold tracking-widest uppercase">Curriculum Portal</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex gap-6">
+                <a href="#courses" class="text-sm font-medium text-slate-600 hover:text-arbor-600 transition-colors">カリキュラム</a>
+                <a href="#elearning" class="text-sm font-medium text-slate-600 hover:text-arbor-600 transition-colors">eラーニング</a>
+                <a href="#tutorials" class="text-sm font-medium text-slate-600 hover:text-arbor-600 transition-colors">操作ガイド</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+        
+        <!-- セクション1：カリキュラム -->
+        <section id="courses" class="scroll-mt-24">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-arbor-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        カリキュラム
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">各種スキルを習得するためのメイン動画講座シリーズです。</p>
+                </div>
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="curriculumSearch" placeholder="カリキュラムを検索..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-arbor-500 focus:ring-1 focus:ring-arbor-500 transition-colors bg-white/80 backdrop-blur text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-8">
+                <button class="curriculum-filter-btn active px-4 py-2 rounded-full text-sm font-bold transition-colors bg-arbor-600 text-white shadow-md shadow-arbor-500/20" data-filter="all">すべて表示</button>
+                <button class="curriculum-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="chatgpt">ChatGPT</button>
+                <button class="curriculum-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="gemini">Gemini</button>
+                <button class="curriculum-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="image">画像生成</button>
+                <button class="curriculum-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="video">動画生成</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px] items-start content-start" id="curriculumGrid">
+                <!-- AI学習講座 -->
+                <a href="https://www.youtube.com/playlist?list=PLIhklsSj5sZNPt01hv18bfoLbhRm1rjYa" target="_blank" class="curriculum-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="chatgpt" data-title="全36回「AI学習講座」">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="Ai-training.png" alt="AI学習講座" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-arbor-900/80 via-arbor-900/20 to-transparent opacity-80"></div>
+                        <div class="absolute top-3 left-3 bg-gradient-to-r from-arbor-500 to-arbor-600 text-white text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider shadow-md">プレイリスト</div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-arbor-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-arbor-600 font-semibold mb-1 tracking-wide">ChatGPT</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-arbor-600 transition-colors">全36回「AI学習講座」</h3>
+                    </div>
+                </a>
+
+                <!-- Gemini学習講座 -->
+                <a href="https://www.youtube.com/playlist?list=PLIhklsSj5sZM-87cqUoLdBGzYPlju-Sr5" target="_blank" class="curriculum-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="gemini" data-title="全19回「Gemini学習講座」">
+                    <div class="relative w-full aspect-video bg-white overflow-hidden flex items-center justify-center p-6">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Google_Gemini_logo.svg" alt="Geminiロゴ" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 border-b border-slate-100"></div>
+                        <div class="absolute top-3 left-3 bg-gradient-to-r from-arbor-500 to-arbor-600 text-white text-[10px] px-2 py-1 rounded font-bold uppercase tracking-wider z-10 shadow-md">プレイリスト</div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <div class="bg-arbor-600/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="text-xs text-arbor-600 font-semibold mb-1 tracking-wide">Gemini</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-arbor-600 transition-colors">全19回「Gemini学習講座」</h3>
+                    </div>
+                </a>
+            </div>
+            <div id="curriculumNoResults" class="hidden text-center py-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p class="text-slate-500 font-medium">該当するカリキュラムが見つかりませんでした。</p>
+            </div>
+        </section>
+
+        <!-- セクション2：eラーニング教材 -->
+        <section id="elearning" class="scroll-mt-24">
+            <div class="mb-6 text-center">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                    教材サイト
+                </h2>
+                <p class="text-sm text-slate-600 mt-2">本格的に学びたい方のためのデジタルスキル学習プラットフォーム。</p>
+            </div>
+            <div class="max-w-3xl mx-auto">
+                <a href="https://saipon.jp/h/bs/" target="_blank" class="block rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-400 group border border-slate-100">
+                    <div class="flex flex-col md:flex-row bg-gradient-to-br from-purple-600 via-purple-500 to-orange-500">
+                        <div class="md:w-1/3 relative bg-white/5 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="デジタル学習イラスト" class="w-full h-full object-cover aspect-video md:aspect-auto opacity-80 mix-blend-overlay group-hover:opacity-100 transition-opacity duration-500">
+                            <div class="absolute inset-0 bg-purple-900/10"></div>
+                            <div class="absolute top-3 left-3 bg-white/20 backdrop-blur-md text-white text-[10px] px-2 py-1 rounded-full font-bold border border-white/30">Official Platform</div>
+                        </div>
+                        <div class="md:w-2/3 p-6 md:p-8 flex flex-col justify-center relative overflow-hidden text-white">
+                            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                            <div class="mb-4">
+                                <h3 class="text-xl font-bold mb-1">ARBOR e-Learning</h3>
+                                <p class="text-xs text-white/80 leading-relaxed">配布されたIDとパスワードでログインしてください。<br>限定公開の特別講座が多数用意されています。</p>
+                            </div>
+                            <div class="mt-4 flex flex-col sm:flex-row items-center gap-4 relative z-10">
+                                <span class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-bold rounded-lg text-purple-700 bg-white hover:bg-orange-50 shadow-md transition-colors w-full sm:w-auto">
+                                    教材サイトへ移動
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                                </span>
+                                <div class="flex items-center gap-1.5 text-[10px] font-medium bg-black/20 px-2 py-1 rounded border border-white/10">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>
+                                    ログインが必要です
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- セクション3：操作ガイド -->
+        <section id="tutorials" class="scroll-mt-24">
+            <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-arbor-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        操作ガイド・チュートリアル
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">各種ツールやシステムの具体的な操作方法を解説するマニュアル動画です。</p>
+                </div>
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="tutorialSearch" placeholder="操作ガイドを検索..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-arbor-500 focus:ring-1 focus:ring-arbor-500 transition-colors bg-white/80 backdrop-blur text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-8">
+                <button class="tutorial-filter-btn active px-4 py-2 rounded-full text-sm font-bold transition-colors bg-arbor-600 text-white shadow-md shadow-arbor-500/20" data-filter="all">すべて表示</button>
+                <button class="tutorial-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="attendance">通所・退勤</button>
+                <button class="tutorial-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="deliverables">成果物</button>
+                <button class="tutorial-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="metalife">メタライフ</button>
+                <button class="tutorial-filter-btn px-4 py-2 rounded-full text-sm font-bold transition-colors bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-arbor-600" data-filter="canva">Canva</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[400px] items-start content-start" id="tutorialGrid">
+                <!-- 通所スケジュール -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="attendance" data-title="通所スケジュール予定表の入力方法" data-video-url="https://drive.google.com/file/d/1oVG2FPCfYGd4UFfwoyOuCr_-eQVOE1ya/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1506784365847-bbad939e9335?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-sunlight-400"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-yellow-700 font-bold mb-1 border border-yellow-200 bg-yellow-50 px-2 py-0.5 rounded inline-block">通所・退勤</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">通所スケジュール予定表の入力方法</h3>
+                    </div>
+                </button>
+
+                <!-- 健康報告 -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="attendance" data-title="健康報告の記入＆提出方法" data-video-url="https://drive.google.com/file/d/1rH24REqWZejptpdHUGPdgYItCKiMIzYJ/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-sunlight-400"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-yellow-700 font-bold mb-1 border border-yellow-200 bg-yellow-50 px-2 py-0.5 rounded inline-block">通所・退勤</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">健康報告の記入＆提出方法</h3>
+                    </div>
+                </button>
+
+                <!-- はじめての成果物（お客様画像: First_deliverable_upload..png を反映） -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="deliverables" data-title="はじめて成果物フォルダにアクセス＆アップロードする方法" data-video-url="https://drive.google.com/file/d/13exrjJuZF_pK9Kmk30yHeYnEQYC8NhxQ/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="First_deliverable_upload..png" alt="はじめて成果物フォルダのサムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1618424181497-157f25b6ce89?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-arbor-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-arbor-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-arbor-700 font-bold mb-1 border border-arbor-200 bg-arbor-50 px-2 py-0.5 rounded inline-block">成果物</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">はじめて成果物フォルダにアクセス＆アップロードする方法</h3>
+                    </div>
+                </button>
+
+                <!-- 成果物アップロード（お客様画像: deliverable_upload.png を反映） -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="deliverables" data-title="成果物をアップロードする方法" data-video-url="https://drive.google.com/file/d/1q-s3nIjuuhPo5OIoWCjd1jm2buMg6o5Y/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="deliverable_upload.png" alt="成果物アップロードのサムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1588508065123-287b28e0131b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-arbor-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-arbor-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-arbor-700 font-bold mb-1 border border-arbor-200 bg-arbor-50 px-2 py-0.5 rounded inline-block">成果物</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">成果物をアップロードする方法</h3>
+                    </div>
+                </button>
+
+                <!-- ボードゲームアリーナ -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="metalife" data-title="ボードゲームアリーナへのログイン方法" data-video-url="https://drive.google.com/file/d/1kzi2GpG6Vn28uSZOSS6zw0BU8i_eSuVD/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="Board-Game-Arena.png" alt="ボードゲームアリーナのサムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-indigo-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-indigo-700 font-bold mb-1 border border-indigo-200 bg-indigo-50 px-2 py-0.5 rounded inline-block">メタライフ</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">ボードゲームアリーナへのログイン方法</h3>
+                    </div>
+                </button>
+
+                <!-- ChatGPTログイン -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="metalife" data-title="メタライフからChatGPTへのログイン方法" data-video-url="https://drive.google.com/file/d/1oSCdEptvRhgkzoNp2_7UXeA7LxbdvsRR/preview">
+                    <div class="relative w-full aspect-video bg-white overflow-hidden flex items-center justify-center p-6">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg" alt="ChatGPTロゴ" class="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 border-b border-slate-50"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <div class="bg-arbor-600/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-indigo-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-indigo-700 font-bold mb-1 border border-indigo-200 bg-indigo-50 px-2 py-0.5 rounded inline-block">メタライフ</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">メタライフからChatGPTへのログイン方法</h3>
+                    </div>
+                </button>
+
+                <!-- 画面分割 -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="metalife" data-title="画面分割とコードネーム" data-video-url="https://drive.google.com/file/d/17xOBiAL2JB-zSvmf9lPyt0K_SEoiTTZX/view?usp=sharing">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="split_screen_game.png" alt="左右分割画面のイラスト" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" onerror="this.src='https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-indigo-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-indigo-700 font-bold mb-1 border border-indigo-200 bg-indigo-50 px-2 py-0.5 rounded inline-block">メタライフ</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">画面分割とコードネーム</h3>
+                    </div>
+                </button>
+
+                <!-- Canva関連 -->
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="canva" data-title="メタライフからCanvaへの ログイン方法" data-video-url="https://drive.google.com/file/d/1ITNbYmixppOFEQUQT9kxlfYdZx9o6s2R/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="canva_login.png" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-pink-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-pink-700 font-bold mb-1 border border-pink-200 bg-pink-50 px-2 py-0.5 rounded inline-block">Canva</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">メタライフからCanvaへの ログイン方法</h3>
+                    </div>
+                </button>
+
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="canva" data-title="Canva メイン画面構成" data-video-url="https://drive.google.com/file/d/1dBHV4_ulDkKPH7WyPyCbbXBBzwy9maGP/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="canva_screen.png" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-pink-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-pink-700 font-bold mb-1 border border-pink-200 bg-pink-50 px-2 py-0.5 rounded inline-block">Canva</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">Canva メイン画面構成</h3>
+                    </div>
+                </button>
+
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="canva" data-title="Canvaで自分のフォルダを作成する方法" data-video-url="https://drive.google.com/file/d/10ObSX3C4sriqVuOU7b97SeHIcXkLM8Lr/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="canva_create.png" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-pink-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-pink-700 font-bold mb-1 border border-pink-200 bg-pink-50 px-2 py-0.5 rounded inline-block">Canva</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">Canvaで自分のフォルダを作成する方法</h3>
+                    </div>
+                </button>
+
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="canva" data-title="Canvaで制作したものを自分のフォルダに移動する方法" data-video-url="https://drive.google.com/file/d/1IR6MUheJ78v6yYoRVjRp_D9-WftpBlSd/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="canva_move.png" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-pink-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-pink-700 font-bold mb-1 border border-pink-200 bg-pink-50 px-2 py-0.5 rounded inline-block">Canva</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">Canvaで制作したものを自分のフォルダに移動する方法</h3>
+                    </div>
+                </button>
+
+                <button type="button" class="tutorial-item card-hover group bg-white/80 backdrop-blur-sm rounded-xl overflow-hidden border border-slate-200 block w-full text-left relative" data-category="canva" data-title="Canvaの基本操作（テキスト編）" data-video-url="https://drive.google.com/file/d/1qXK0mL9namyqw0VufH7yAurBvOVu90kS/preview">
+                    <div class="relative w-full aspect-video bg-slate-100 overflow-hidden">
+                        <img src="canva_text.png" alt="サムネイル" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div class="bg-white/90 rounded-full p-3 shadow-lg transform group-hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-600 pl-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-1 w-full bg-pink-500"></div>
+                    <div class="p-5">
+                        <p class="text-xs text-pink-700 font-bold mb-1 border border-pink-200 bg-pink-50 px-2 py-0.5 rounded inline-block">Canva</p>
+                        <h3 class="font-bold text-slate-800 line-clamp-2 mt-2 group-hover:text-arbor-600 transition-colors">Canvaの基本操作（テキスト編）</h3>
+                    </div>
+                </button>
+            </div>
+            <div id="tutorialNoResults" class="hidden text-center py-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p class="text-slate-500 font-medium">該当する動画が見つかりませんでした。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-arbor-900 text-arbor-100/60 py-10 mt-12 border-t border-arbor-800 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-arbor-600 to-sunlight-500 rounded flex items-center justify-center text-white font-bold text-xs shadow-md border border-white/10">AN</div>
+                <span class="text-white font-semibold tracking-wide">ARBOR NOIR</span>
+            </div>
+            <p class="text-sm">© ARBOR NOIR Curriculum Portal. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 動画再生用モーダル -->
+    <div id="videoModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/90 backdrop-blur-md opacity-0 transition-opacity duration-300">
+        <div class="relative w-full max-w-5xl mx-4 md:mx-auto aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform scale-95 transition-transform duration-300" id="videoModalContent">
+            <button type="button" id="closeModalBtn" class="absolute top-4 right-4 z-10 bg-black/50 hover:bg-red-500 text-white p-2.5 rounded-full transition-all duration-200 backdrop-blur-md border border-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <iframe id="videoIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoModal = document.getElementById('videoModal');
+            const videoModalContent = document.getElementById('videoModalContent');
+            const videoIframe = document.getElementById('videoIframe');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const videoCards = document.querySelectorAll('.curriculum-item, .tutorial-item');
+
+            videoCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const videoUrl = card.getAttribute('data-video-url');
+                    if (videoUrl && card.tagName.toLowerCase() === 'button') {
+                        e.preventDefault();
+                        videoIframe.src = videoUrl;
+                        videoModal.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden'; 
+                        setTimeout(() => {
+                            videoModal.classList.remove('opacity-0');
+                            videoModalContent.classList.remove('scale-95');
+                            videoModalContent.classList.add('scale-100');
+                        }, 10);
+                    }
+                });
+            });
+
+            const closeModal = () => {
+                videoModal.classList.add('opacity-0');
+                videoModalContent.classList.remove('scale-100');
+                videoModalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    videoModal.classList.add('hidden');
+                    videoIframe.src = ''; 
+                    document.body.style.overflow = '';
+                }, 300);
+            };
+
+            closeModalBtn.addEventListener('click', closeModal);
+            videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) closeModal(); 
+            });
+
+            function initFilterAndSearch(sectionId, btnClass, itemClass, searchInputId, noResultsId) {
+                const section = document.getElementById(sectionId);
+                const filterBtns = section.querySelectorAll(`.${btnClass}`);
+                const items = section.querySelectorAll(`.${itemClass}`);
+                const searchInput = document.getElementById(searchInputId);
+                const noResults = document.getElementById(noResultsId);
+
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        searchInput.value = '';
+                        filterBtns.forEach(b => {
+                            b.classList.remove('bg-arbor-600', 'text-white', 'shadow-md', 'shadow-arbor-500/20');
+                            b.classList.add('bg-white', 'text-slate-600');
+                        });
+                        btn.classList.remove('bg-white', 'text-slate-600');
+                        btn.classList.add('bg-arbor-600', 'text-white', 'shadow-md', 'shadow-arbor-500/20');
+                        const filterValue = btn.getAttribute('data-filter');
+                        let visibleCount = 0;
+                        items.forEach(item => {
+                            item.classList.remove('fade-in-up');
+                            const itemCategory = item.getAttribute('data-category');
+                            if (filterValue === 'all' || filterValue === itemCategory) {
+                                item.classList.remove('hidden-item');
+                                setTimeout(() => item.classList.add('fade-in-up'), 10);
+                                visibleCount++;
+                            } else {
+                                item.classList.add('hidden-item');
+                            }
+                        });
+                        noResults.classList.toggle('hidden', visibleCount > 0);
+                        const headerOffset = 80; 
+                        const elementPosition = section.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    });
+                });
+
+                searchInput.addEventListener('input', (e) => {
+                    const allBtn = section.querySelector('[data-filter="all"]');
+                    if (!allBtn.classList.contains('bg-arbor-600')) {
+                        filterBtns.forEach(b => {
+                            b.classList.remove('bg-arbor-600', 'text-white', 'shadow-md', 'shadow-arbor-500/20');
+                            b.classList.add('bg-white', 'text-slate-600');
+                        });
+                        allBtn.classList.remove('bg-white', 'text-slate-600');
+                        allBtn.classList.add('bg-arbor-600', 'text-white', 'shadow-md', 'shadow-arbor-500/20');
+                    }
+                    const searchTerm = e.target.value.toLowerCase();
+                    let visibleCount = 0;
+                    items.forEach(item => {
+                        item.classList.remove('fade-in-up');
+                        const title = item.getAttribute('data-title').toLowerCase();
+                        if (title.includes(searchTerm)) {
+                            item.classList.remove('hidden-item');
+                            setTimeout(() => item.classList.add('fade-in-up'), 10);
+                            visibleCount++;
+                        } else {
+                            item.classList.add('hidden-item');
+                        }
+                    });
+                    noResults.classList.toggle('hidden', visibleCount > 0);
+                });
+            }
+
+            initFilterAndSearch('courses', 'curriculum-filter-btn', 'curriculum-item', 'curriculumSearch', 'curriculumNoResults');
+            initFilterAndSearch('tutorials', 'tutorial-filter-btn', 'tutorial-item', 'tutorialSearch', 'tutorialNoResults');
+        });
+    </script>
+</body>
+</html>
